@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">FindMyRouteApp</string>
     <string name="title_activity_maps">Map</string>
+
+
+    // Save Location Fragment
+    <string name="save_location_save">Kaydet</string>
+    <string name="save_location_cancel">İptal</string>
+    <string name="save_location_name">Adı</string>
+    <string name="save_location_description">Açıklama</string>
+
 </resources>

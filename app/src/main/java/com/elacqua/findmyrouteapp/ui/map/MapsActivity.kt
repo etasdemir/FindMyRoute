@@ -1,9 +1,10 @@
 package com.elacqua.findmyrouteapp.ui.map
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import com.elacqua.findmyrouteapp.R
-
+import com.elacqua.findmyrouteapp.ui.location.SaveLocationFragment
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -47,21 +48,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setMarkerClickListener(currentMarker: Marker) {
-        mMap.setOnMarkerClickListener{ marker ->
-            if (marker == currentMarker){
-                markerClicked(marker)
+        mMap.setOnMarkerClickListener { marker ->
+            if (marker == currentMarker) {
+                setMarkerDraggableAndChangeColor(marker)
             }
             false
         }
     }
 
-    private fun markerClicked(marker: Marker) {
-        marker.isDraggable = true
-        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+    private fun setMarkerDraggableAndChangeColor(marker: Marker) {
+        marker.run {
+            isDraggable = true
+            setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+        }
     }
 
     private fun setMarkerDragListener() {
-        mMap.setOnMarkerDragListener(object: GoogleMap.OnMarkerDragListener{
+        mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDragStart(marker: Marker?) {
             }
 
@@ -70,9 +73,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             override fun onMarkerDragEnd(marker: Marker?) {
                 Timber.e("marker position: ${marker?.position}")
+                openSaveLocationFragment()
             }
         })
     }
 
+    private fun openSaveLocationFragment() {
+        val transaction = supportFragmentManager.beginTransaction()
+        val args = bundleOf()
+        transaction.run {
+            add(R.id.fragment_container, SaveLocationFragment::class.java, args, "SaveLocationFragment")
+            addToBackStack("SaveLocationFragment")
+            commit()
+        }
+    }
 
+    override fun onBackPressed() {
+        supportFragmentManager.popBackStack()
+    }
 }
