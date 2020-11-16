@@ -1,6 +1,7 @@
 package com.elacqua.findmyrouteapp.ui.map
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import com.elacqua.findmyrouteapp.R
@@ -11,11 +12,17 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.activity_maps.*
 import timber.log.Timber
+
+private const val FIRST_STATE = 0
+private const val ADD_STATE = 1
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    private lateinit var currentMarker: Marker
+    private var state = FIRST_STATE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +30,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         removeActionBar()
         getMap()
+
+        btn_map_add_location.setOnClickListener {
+            if (state == FIRST_STATE){
+                changeStateToAddState()
+            } else {
+                changeStateToFirstState()
+            }
+        }
     }
 
     private fun removeActionBar() {
@@ -37,14 +52,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.uiSettings.isMapToolbarEnabled = false
+    }
+
+    private fun changeStateToAddState() {
+        initMarker()
+        btn_map_add_location.setImageResource(R.drawable.ic_check_48)
+        state = ADD_STATE
+    }
+
+    private fun changeStateToFirstState() {
+        Timber.e("marker position: ${currentMarker.position}")
+        btn_map_add_location.visibility = View.GONE
+        openSaveLocationFragment()
+        btn_map_add_location.setImageResource(R.drawable.ic_add_48)
+        state = FIRST_STATE
+    }
+
+    private fun initMarker() {
+        if (::mMap.isInitialized){
+            addMarketAtCenter()
+            setMarkerClickListener(currentMarker)
+            backStackListener(currentMarker)
+        }
+    }
+
+    private fun addMarketAtCenter() {
         val centerPosition = mMap.cameraPosition.target
-        val currentMarker = mMap.addMarker(
+        currentMarker = mMap.addMarker(
             MarkerOptions()
                 .position(centerPosition)
         )
-
-        setMarkerClickListener(currentMarker)
-        setMarkerDragListener()
     }
 
     private fun setMarkerClickListener(currentMarker: Marker) {
@@ -63,21 +101,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun setMarkerDragListener() {
-        mMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
-            override fun onMarkerDragStart(marker: Marker?) {
-            }
-
-            override fun onMarkerDrag(marker: Marker?) {
-            }
-
-            override fun onMarkerDragEnd(marker: Marker?) {
-                Timber.e("marker position: ${marker?.position}")
-                openSaveLocationFragment()
-            }
-        })
-    }
-
     private fun openSaveLocationFragment() {
         val transaction = supportFragmentManager.beginTransaction()
         val args = bundleOf()
@@ -85,6 +108,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             add(R.id.fragment_container, SaveLocationFragment::class.java, args, "SaveLocationFragment")
             addToBackStack("SaveLocationFragment")
             commit()
+        }
+    }
+
+    private fun backStackListener(currentMarker: Marker) {
+        supportFragmentManager.addOnBackStackChangedListener {
+            val count = supportFragmentManager.backStackEntryCount
+            val lastItem = 0
+            if (count == lastItem){
+                currentMarker.remove()
+                btn_map_add_location.visibility = View.VISIBLE
+            }
         }
     }
 
