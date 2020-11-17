@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,15 +70,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             visibility = View.GONE
         }
         val args =
-            bundleOf(getString(R.string.save_location_key) to currentMarker.position)
+            bundleOf(getString(R.string.save_location_key) to currentMarker.position )
         openSaveLocationFragment(args)
     }
 
     private fun initMarker() {
         if (::mMap.isInitialized) {
             addMarketAtCenter()
-            setMarkerClickListener(currentMarker)
-            backStackListener(currentMarker)
+            setMarkerClickListener()
+            setMarkerDragListener()
+            backStackListener()
         }
     }
 
@@ -89,7 +91,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
-    private fun setMarkerClickListener(currentMarker: Marker) {
+    private fun setMarkerClickListener() {
         mMap.setOnMarkerClickListener { marker ->
             if (marker == currentMarker) {
                 setMarkerDraggableAndChangeColor(marker)
@@ -103,6 +105,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             isDraggable = true
             setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
         }
+    }
+
+    private fun setMarkerDragListener() {
+        mMap.setOnMarkerDragListener(object: GoogleMap.OnMarkerDragListener{
+            override fun onMarkerDragStart(p0: Marker?) {
+            }
+
+            override fun onMarkerDrag(p0: Marker?) {
+            }
+
+            override fun onMarkerDragEnd(marker: Marker?) {
+                marker?.let { newMarker ->
+                    currentMarker = newMarker
+                }
+            }
+        })
     }
 
     private fun openSaveLocationFragment(args: Bundle) {
@@ -119,7 +137,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun backStackListener(currentMarker: Marker) {
+    private fun backStackListener() {
         supportFragmentManager.addOnBackStackChangedListener {
             val count = supportFragmentManager.backStackEntryCount
             val lastItem = 0
@@ -128,9 +146,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 btn_map_add_location.visibility = View.VISIBLE
             }
         }
-    }
-
-    override fun onBackPressed() {
-        supportFragmentManager.popBackStack()
     }
 }

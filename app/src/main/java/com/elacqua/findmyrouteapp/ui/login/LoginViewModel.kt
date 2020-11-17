@@ -42,6 +42,7 @@ class LoginViewModel @ViewModelInject constructor(
             if (user == null){
                 _loginStatus.postValue(false)
             } else {
+                localRepository.username = username
                 _loginStatus.postValue(true)
             }
         }

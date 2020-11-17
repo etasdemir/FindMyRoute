@@ -1,17 +1,18 @@
 package com.elacqua.findmyrouteapp.ui.location
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import com.elacqua.findmyrouteapp.R
 import com.elacqua.findmyrouteapp.util.FragmentState
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.save_location_fragment.*
-import timber.log.Timber
 
 @AndroidEntryPoint
 class SaveLocationFragment : Fragment() {
@@ -47,7 +48,9 @@ class SaveLocationFragment : Fragment() {
 
     private fun buttonSaveListener(location: LatLng) {
         btn_save_location_save.setOnClickListener {
-            Timber.e("Save location: $location")
+            val title = txt_save_location_title.text.toString()
+            val description = txt_save_location_description.text.toString()
+            viewModel.saveLocation(title, description, location)
             navigateBack()
         }
     }
@@ -58,7 +61,18 @@ class SaveLocationFragment : Fragment() {
         }
     }
 
-    private fun navigateBack() = parentFragmentManager.popBackStack()
+    private fun navigateBack() {
+        hideKeyboard()
+        parentFragmentManager.popBackStack()
+    }
+
+    private fun hideKeyboard() {
+        val view = activity?.currentFocus
+        view?.let { v ->
+            val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(v.windowToken, 0)
+        }
+    }
 
     private fun initNotEditableState() {
         val tempName = "Temp Name"

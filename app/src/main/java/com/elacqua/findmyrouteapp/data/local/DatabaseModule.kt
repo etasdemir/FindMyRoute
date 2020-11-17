@@ -2,6 +2,7 @@ package com.elacqua.findmyrouteapp.data.local
 
 import android.content.Context
 import androidx.room.Room
+import com.elacqua.findmyrouteapp.data.local.dao.PlaceDao
 import com.elacqua.findmyrouteapp.data.local.dao.UserDao
 import dagger.Module
 import dagger.Provides
@@ -25,5 +26,10 @@ object DatabaseModule {
     @Provides
     fun provideUserDao(db: LocalDatabase): UserDao {
         return db.userDao()
+    }
+
+    @Provides
+    fun providePlaceDao(db: LocalDatabase): PlaceDao {
+        return db.placeDao()
     }
 }
