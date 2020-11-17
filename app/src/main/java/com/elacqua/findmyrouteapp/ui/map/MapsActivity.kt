@@ -13,7 +13,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_maps.*
-import timber.log.Timber
 
 private const val FIRST_STATE = 0
 private const val ADD_STATE = 1
@@ -32,10 +31,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         getMap()
 
         btn_map_add_location.setOnClickListener {
-            if (state == FIRST_STATE){
-                changeStateToAddState()
+            state = if (state == FIRST_STATE) {
+                handleFirstState()
+                ADD_STATE
             } else {
-                changeStateToFirstState()
+                handleAddState()
+                FIRST_STATE
             }
         }
     }
@@ -55,22 +56,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isMapToolbarEnabled = false
     }
 
-    private fun changeStateToAddState() {
+    private fun handleFirstState() {
         initMarker()
         btn_map_add_location.setImageResource(R.drawable.ic_check_48)
-        state = ADD_STATE
     }
 
-    private fun changeStateToFirstState() {
-        Timber.e("marker position: ${currentMarker.position}")
-        btn_map_add_location.visibility = View.GONE
-        openSaveLocationFragment()
-        btn_map_add_location.setImageResource(R.drawable.ic_add_48)
-        state = FIRST_STATE
+    private fun handleAddState() {
+        btn_map_add_location.run {
+            setImageResource(R.drawable.ic_add_48)
+            visibility = View.GONE
+        }
+        val args =
+            bundleOf(getString(R.string.save_location_key) to currentMarker.position)
+        openSaveLocationFragment(args)
     }
 
     private fun initMarker() {
-        if (::mMap.isInitialized){
+        if (::mMap.isInitialized) {
             addMarketAtCenter()
             setMarkerClickListener(currentMarker)
             backStackListener(currentMarker)
@@ -101,11 +103,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun openSaveLocationFragment() {
+    private fun openSaveLocationFragment(args: Bundle) {
         val transaction = supportFragmentManager.beginTransaction()
-        val args = bundleOf()
         transaction.run {
-            add(R.id.fragment_container, SaveLocationFragment::class.java, args, "SaveLocationFragment")
+            add(
+                R.id.fragment_container,
+                SaveLocationFragment::class.java,
+                args,
+                "SaveLocationFragment"
+            )
             addToBackStack("SaveLocationFragment")
             commit()
         }
@@ -115,7 +121,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         supportFragmentManager.addOnBackStackChangedListener {
             val count = supportFragmentManager.backStackEntryCount
             val lastItem = 0
-            if (count == lastItem){
+            if (count == lastItem) {
                 currentMarker.remove()
                 btn_map_add_location.visibility = View.VISIBLE
             }

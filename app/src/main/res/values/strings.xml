@@ -9,4 +9,9 @@
     <string name="save_location_name">Adı</string>
     <string name="save_location_description">Açıklama</string>
 
+
+    // Argument Keys
+    <string name="save_location_key">saveLocation</string>
+    <string name="fragment_state">state</string>
+
 </resources>
