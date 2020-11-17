@@ -2,6 +2,16 @@
     <string name="app_name">FindMyRouteApp</string>
     <string name="title_activity_maps">Map</string>
 
+    // Login Screen
+    <string name="login_username">Kullanıcı Adı</string>
+    <string name="login_password">Şifre</string>
+    <string name="login_sign_in">Giriş Yap</string>
+    <string name="login_sign_up">Kayıt Ol</string>
+    <string name="login_wrong_credentials">Kullanıcı adı veya şifre yanlış</string>
+    <string name="login_invalid_username">Kullanıcı adı boş olamaz</string>
+    <string name="login_invalid_password">Şifre boş olamaz</string>
+    <string name="login_sign_up_success">Kaydolma başarılı. Giriş yapınız.</string>
+    <string name="login_username_exist">Bu kullanıcı adı kullanılmaktadır</string>
 
     // Save Location Fragment
     <string name="save_location_save">Kaydet</string>
