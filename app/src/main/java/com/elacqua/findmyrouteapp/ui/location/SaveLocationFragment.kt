@@ -9,9 +9,11 @@ import androidx.fragment.app.viewModels
 import com.elacqua.findmyrouteapp.R
 import com.elacqua.findmyrouteapp.util.FragmentState
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.save_location_fragment.*
 import timber.log.Timber
 
+@AndroidEntryPoint
 class SaveLocationFragment : Fragment() {
 
     private val viewModel: SaveLocationViewModel by viewModels()
