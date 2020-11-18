@@ -23,4 +23,6 @@ class LocalRepository @Inject constructor(
     suspend fun addPlace(place: Place) =
         placeDao.addPlace(place)
 
+    fun getAllPlacesByUsername() =
+        placeDao.getAllPlacesByUsername(username)
 }

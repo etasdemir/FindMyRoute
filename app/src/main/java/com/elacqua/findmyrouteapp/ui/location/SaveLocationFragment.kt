@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import com.elacqua.findmyrouteapp.R
+import com.elacqua.findmyrouteapp.data.local.model.Place
 import com.elacqua.findmyrouteapp.util.FragmentState
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,15 +76,15 @@ class SaveLocationFragment : Fragment() {
     }
 
     private fun initNotEditableState() {
-        val tempName = "Temp Name"
-        val tempDescription = "Temp Description"
+        val key = getString(R.string.save_location_place_key)
+        val places = arguments?.get(key)
         txt_save_location_title.run {
-            setText(tempName)
             isEnabled = false
+            setText((places as Place).title)
         }
         txt_save_location_description.run {
-            setText(tempDescription)
             isEnabled = false
+            setText((places as Place).description)
         }
         btn_save_location_save.visibility = View.GONE
     }

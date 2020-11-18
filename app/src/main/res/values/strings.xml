@@ -19,9 +19,14 @@
     <string name="save_location_name">Adı</string>
     <string name="save_location_description">Açıklama</string>
 
+    // MapsActivity
+    <string name="map_create_route">Rota Oluştur</string>
+    <string name="map_show_details">Detay Göster</string>
+    <string name="map_show_location">Konuma Git</string>
 
     // Argument Keys
-    <string name="save_location_key">saveLocation</string>
-    <string name="fragment_state">state</string>
+    <string name="save_location_key">saveLocationKey</string>
+    <string name="fragment_state">stateKey</string>
+    <string name="save_location_place_key">placeKey</string>
 
 </resources>
