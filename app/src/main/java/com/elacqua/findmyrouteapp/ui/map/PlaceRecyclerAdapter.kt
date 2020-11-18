@@ -13,7 +13,6 @@ class PlaceRecyclerAdapter(
 ) : RecyclerView.Adapter<PlaceRecyclerAdapter.PlaceViewHolder>() {
 
     private val places = ArrayList<Place>()
-    private val handler = CollapseExpandHandler()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -38,6 +37,8 @@ class PlaceRecyclerAdapter(
     }
 
     inner class PlaceViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        private var isExpanded = false
+
         fun onBind(position: Int) {
             view.txt_rv_item_title.text = places[position].title
             view.expandLayout.visibility = View.GONE
@@ -45,19 +46,36 @@ class PlaceRecyclerAdapter(
 
         fun onClick(position: Int) {
             view.setOnClickListener {
-                handler.toggle(view.expandLayout, position)
+                toggle()
             }
-            buttonDetailListener(position)
-            buttonShowLocationListener(position)
+            handleDetailButton(position)
+            handleShowLocationButton(position)
         }
 
-        private fun buttonDetailListener(position: Int) {
+        private fun toggle() {
+            if (isExpanded){
+                collapse()
+            } else {
+                expand()
+            }
+            isExpanded = !isExpanded
+        }
+
+        private fun collapse() {
+            view.expandLayout.visibility = View.GONE
+        }
+
+        private fun expand() {
+            view.expandLayout.visibility = View.VISIBLE
+        }
+
+        private fun handleDetailButton(position: Int) {
             view.btn_expand_show_detail.setOnClickListener {
                 placeSelectedListener.onDetailClicked(places[position])
             }
         }
 
-        private fun buttonShowLocationListener(position: Int) {
+        private fun handleShowLocationButton(position: Int) {
             view.btn_expand_show_location.setOnClickListener {
                 placeSelectedListener.onLocationClicked(places[position])
             }

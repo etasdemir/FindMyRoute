@@ -43,16 +43,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         initRecyclerView()
 
         btn_map_add_location.setOnClickListener {
-            state = if (state == FIRST_STATE) {
-                handleFirstState()
-                ADD_STATE
-            } else {
-                handleAddState()
-                FIRST_STATE
-            }
+            handleState()
         }
 
         observePlaces()
+        handleBackStack()
     }
 
     private fun removeActionBar() {
@@ -114,16 +109,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
+    private fun handleState() {
+        state = if (state == FIRST_STATE) {
+            handleFirstState()
+            ADD_STATE
+        } else {
+            handleAddState()
+            FIRST_STATE
+        }
+    }
+
     private fun handleFirstState() {
         initMarker()
         btn_map_add_location.setImageResource(R.drawable.ic_check_48)
     }
 
     private fun handleAddState() {
-        btn_map_add_location.run {
-            setImageResource(R.drawable.ic_add_48)
-            visibility = View.GONE
-        }
+        btn_map_add_location.setImageResource(R.drawable.ic_add_48)
         val args =
             bundleOf(getString(R.string.save_location_key) to currentMarker.position)
         openSaveLocationFragment(args)
@@ -134,7 +136,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             addMarketAtCenter()
             setMarkerClickListener()
             setMarkerDragListener()
-            backStackListener()
         }
     }
 
@@ -179,6 +180,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun openSaveLocationFragment(args: Bundle) {
+        btn_map_add_location.visibility = View.GONE
+        recycler_menu.visibility = View.GONE
         val transaction = supportFragmentManager.beginTransaction()
         transaction.run {
             add(
@@ -192,14 +195,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun backStackListener() {
+    private fun handleBackStack() {
         supportFragmentManager.addOnBackStackChangedListener {
             val count = supportFragmentManager.backStackEntryCount
             val lastItem = 0
             if (count == lastItem) {
-                currentMarker.remove()
                 btn_map_add_location.visibility = View.VISIBLE
+                recycler_menu.visibility = View.VISIBLE
+                state = FIRST_STATE
+                btn_map_add_location.setImageResource(R.drawable.ic_add_48)
+                if (::currentMarker.isInitialized){
+                    currentMarker.remove()
+                }
             }
         }
     }
+
 }

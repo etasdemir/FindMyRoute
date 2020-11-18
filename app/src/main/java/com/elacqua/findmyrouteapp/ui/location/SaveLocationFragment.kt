@@ -52,6 +52,7 @@ class SaveLocationFragment : Fragment() {
             val title = txt_save_location_title.text.toString()
             val description = txt_save_location_description.text.toString()
             viewModel.saveLocation(title, description, location)
+            hideKeyboard()
             navigateBack()
         }
     }
@@ -62,10 +63,7 @@ class SaveLocationFragment : Fragment() {
         }
     }
 
-    private fun navigateBack() {
-        hideKeyboard()
-        parentFragmentManager.popBackStack()
-    }
+    private fun navigateBack() = parentFragmentManager.popBackStack()
 
     private fun hideKeyboard() {
         val view = activity?.currentFocus
