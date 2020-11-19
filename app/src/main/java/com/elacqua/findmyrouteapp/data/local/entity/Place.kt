@@ -1,4 +1,4 @@
-package com.elacqua.findmyrouteapp.data.local.model
+package com.elacqua.findmyrouteapp.data.local.entity
 
 import android.os.Parcelable
 import androidx.room.Entity

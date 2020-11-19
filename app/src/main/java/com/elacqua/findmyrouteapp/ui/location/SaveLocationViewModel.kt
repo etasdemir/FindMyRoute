@@ -4,7 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elacqua.findmyrouteapp.data.local.LocalRepository
-import com.elacqua.findmyrouteapp.data.local.model.Place
+import com.elacqua.findmyrouteapp.data.local.entity.Place
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 

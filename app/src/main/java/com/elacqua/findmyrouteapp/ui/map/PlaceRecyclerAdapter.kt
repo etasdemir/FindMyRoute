@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.elacqua.findmyrouteapp.R
-import com.elacqua.findmyrouteapp.data.local.model.Place
+import com.elacqua.findmyrouteapp.data.local.entity.Place
 import kotlinx.android.synthetic.main.rv_item.view.*
 
 class PlaceRecyclerAdapter(
@@ -35,6 +35,8 @@ class PlaceRecyclerAdapter(
         places.addAll(placesList)
         notifyDataSetChanged()
     }
+
+    fun getPlaces() = places
 
     inner class PlaceViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private var isExpanded = false

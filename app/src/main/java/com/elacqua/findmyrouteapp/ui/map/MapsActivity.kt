@@ -1,22 +1,20 @@
 package com.elacqua.findmyrouteapp.ui.map
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import com.elacqua.findmyrouteapp.R
-import com.elacqua.findmyrouteapp.data.local.model.Place
+import com.elacqua.findmyrouteapp.data.local.entity.Place
 import com.elacqua.findmyrouteapp.ui.location.SaveLocationFragment
 import com.elacqua.findmyrouteapp.util.FragmentState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.map_menu.*
@@ -47,7 +45,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         observePlaces()
+        handleButtonCreateRoute()
+        observeDecodedPolyline()
         handleBackStack()
+
+
     }
 
     private fun removeActionBar() {
@@ -106,6 +108,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun observePlaces() {
         viewModel.places.observe(this, { placeList ->
             mAdapter.clearAndAddPlaces(placeList)
+        })
+    }
+
+    private fun handleButtonCreateRoute() {
+        btn_map_create_route.setOnClickListener {
+            val places = mAdapter.getPlaces()
+            viewModel.findPath(places)
+        }
+    }
+
+    private fun observeDecodedPolyline() {
+        viewModel.decodedPolyline.observe(this, {
+            val polylineOpt = PolylineOptions().addAll(it).color(Color.RED).width(5f)
+            mMap.addPolyline(polylineOpt)
+            mMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        mAdapter.getPlaces()[0].latitude,
+                        mAdapter.getPlaces()[0].longitude
+                    ), 15f
+                )
+            )
         })
     }
 
@@ -204,7 +228,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 recycler_menu.visibility = View.VISIBLE
                 state = FIRST_STATE
                 btn_map_add_location.setImageResource(R.drawable.ic_add_48)
-                if (::currentMarker.isInitialized){
+                if (::currentMarker.isInitialized) {
                     currentMarker.remove()
                 }
             }

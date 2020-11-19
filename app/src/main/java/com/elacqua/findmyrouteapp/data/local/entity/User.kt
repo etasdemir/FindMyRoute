@@ -1,4 +1,4 @@
-package com.elacqua.findmyrouteapp.data.local.model
+package com.elacqua.findmyrouteapp.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

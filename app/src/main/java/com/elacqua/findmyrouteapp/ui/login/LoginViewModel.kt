@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elacqua.findmyrouteapp.data.local.LocalRepository
-import com.elacqua.findmyrouteapp.data.local.model.User
+import com.elacqua.findmyrouteapp.data.local.entity.User
 import com.elacqua.findmyrouteapp.util.Utility.md5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

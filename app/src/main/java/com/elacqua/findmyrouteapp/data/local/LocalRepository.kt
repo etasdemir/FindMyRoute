@@ -2,8 +2,8 @@ package com.elacqua.findmyrouteapp.data.local
 
 import com.elacqua.findmyrouteapp.data.local.dao.PlaceDao
 import com.elacqua.findmyrouteapp.data.local.dao.UserDao
-import com.elacqua.findmyrouteapp.data.local.model.Place
-import com.elacqua.findmyrouteapp.data.local.model.User
+import com.elacqua.findmyrouteapp.data.local.entity.Place
+import com.elacqua.findmyrouteapp.data.local.entity.User
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,4 +25,7 @@ class LocalRepository @Inject constructor(
 
     fun getAllPlacesByUsername() =
         placeDao.getAllPlacesByUsername(username)
+
+    suspend fun deleteAllPlaces() =
+        placeDao.nukePlaceTable()
 }

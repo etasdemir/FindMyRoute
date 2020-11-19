@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import com.elacqua.findmyrouteapp.R
-import com.elacqua.findmyrouteapp.data.local.model.Place
+import com.elacqua.findmyrouteapp.data.local.entity.Place
 import com.elacqua.findmyrouteapp.util.FragmentState
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
