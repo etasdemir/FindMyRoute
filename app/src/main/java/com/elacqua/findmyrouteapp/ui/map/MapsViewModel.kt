@@ -25,25 +25,30 @@ class MapsViewModel @ViewModelInject constructor(
     val places: LiveData<List<Place>> = getAllPlaces()
 
     init {
-        viewModelScope.launch {
-            localRepository.deleteAllPlaces()
-        }
+        deleteAllPlaces()
 //        TODO()
     }
 
     private fun getAllPlaces() =
         localRepository.getAllPlacesByUsername()
 
-    fun findPath(places: List<Place>) {
+    fun findPath(places: List<Place>, location: LatLng) {
         viewModelScope.launch(Dispatchers.IO) {
             val longLats = ArrayList<ArrayList<Double>>()
+            longLats.add(arrayListOf(location.longitude, location.latitude))
             for (index in places.indices) {
                 longLats.add(arrayListOf(places[index].longitude, places[index].latitude))
             }
+            longLats.add(arrayListOf(location.longitude, location.latitude))
             val coordinates = Coordinates(longLats)
-            Timber.e("coordinates: $coordinates")
             val result  = remoteRepository.getRoutes(coordinates)
             _decodedPolyline.postValue(result)
+        }
+    }
+
+    fun deleteAllPlaces(){
+        viewModelScope.launch {
+            localRepository.deleteAllPlaces()
         }
     }
 }

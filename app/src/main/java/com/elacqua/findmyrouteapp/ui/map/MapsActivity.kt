@@ -1,5 +1,6 @@
 package com.elacqua.findmyrouteapp.ui.map
 
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -35,7 +36,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-        removeActionBar()
         getMap()
         initAdapter()
         initRecyclerView()
@@ -45,15 +45,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         observePlaces()
-        handleButtonCreateRoute()
         observeDecodedPolyline()
         handleBackStack()
-
-
-    }
-
-    private fun removeActionBar() {
-        this.supportActionBar?.hide()
     }
 
     private fun getMap() {
@@ -65,6 +58,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isMapToolbarEnabled = false
+        getCurrentLocation()
+    }
+
+    /**
+     *  In order to use find route function, location must be obtained.
+     **/
+    private fun getCurrentLocation() {
+        val locationFinder = LocationFinder()
+        locationFinder.getLocation(this)
+        locationFinder.location.observe(this, { location ->
+            moveCameraToPosition(location)
+            handleButtonCreateRoute(location)
+        })
+    }
+
+    private fun handleButtonCreateRoute(location: LatLng) {
+        btn_map_create_route.setOnClickListener {
+            val places = mAdapter.getPlaces()
+            viewModel.findPath(places, location)
+        }
     }
 
     private fun initAdapter() {
@@ -79,30 +92,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 override fun onLocationClicked(place: Place) {
                     val pos = LatLng(place.latitude, place.longitude)
-                    addMarkerAtPositionAndMoveCamera(pos)
+                    addMarkerAt(pos)
+                    moveCameraToPosition(pos)
                 }
             }
         )
-    }
-
-    private fun addMarkerAtPositionAndMoveCamera(pos: LatLng) {
-        mMap.addMarker(
-            MarkerOptions()
-                .position(pos)
-        )
-        mMap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                pos,
-                12f
-            )
-        )
-    }
-
-    private fun initRecyclerView() {
-        rv_map.run {
-            adapter = mAdapter
-            setHasFixedSize(true)
-        }
     }
 
     private fun observePlaces() {
@@ -111,25 +105,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-    private fun handleButtonCreateRoute() {
-        btn_map_create_route.setOnClickListener {
-            val places = mAdapter.getPlaces()
-            viewModel.findPath(places)
-        }
-    }
-
     private fun observeDecodedPolyline() {
         viewModel.decodedPolyline.observe(this, {
             val polylineOpt = PolylineOptions().addAll(it).color(Color.RED).width(5f)
             mMap.addPolyline(polylineOpt)
-            mMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        mAdapter.getPlaces()[0].latitude,
-                        mAdapter.getPlaces()[0].longitude
-                    ), 15f
-                )
-            )
+            val pos = LatLng(mAdapter.getPlaces()[0].latitude, mAdapter.getPlaces()[0].longitude)
+            moveCameraToPosition(pos)
         })
     }
 
@@ -157,17 +138,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun initMarker() {
         if (::mMap.isInitialized) {
-            addMarketAtCenter()
+            val centerPosition = mMap.cameraPosition.target
+            currentMarker = addMarkerAt(centerPosition)
             setMarkerClickListener()
             setMarkerDragListener()
         }
     }
 
-    private fun addMarketAtCenter() {
-        val centerPosition = mMap.cameraPosition.target
-        currentMarker = mMap.addMarker(
+    private fun addMarkerAt(pos: LatLng) =
+        mMap.addMarker(
             MarkerOptions()
-                .position(centerPosition)
+                .position(pos)
+        )
+
+    private fun moveCameraToPosition(pos: LatLng){
+        mMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                pos, 12f
+            )
         )
     }
 
@@ -235,4 +223,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun initRecyclerView() {
+        rv_map.run {
+            adapter = mAdapter
+            setHasFixedSize(true)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LocationFinder.REQUEST_LOCATION && grantResults.isNotEmpty() &&
+            grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED){
+            getCurrentLocation()
+        }
+    }
 }
