@@ -1,7 +1,12 @@
 package com.elacqua.findmyrouteapp.ui.map
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -22,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.map_menu.*
 import timber.log.Timber
 
+
 private const val FIRST_STATE = 0
 private const val ADD_STATE = 1
 
@@ -32,6 +38,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var currentMarker: Marker
     private lateinit var mAdapter: PlaceRecyclerAdapter
+    private lateinit var gpsReceiver: BroadcastReceiver
     private var state = FIRST_STATE
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +59,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         observeErrors()
     }
 
+    override fun onStart() {
+        super.onStart()
+        listenGpsBroadcast()
+        registerReceiver(gpsReceiver, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION))
+        getCurrentLocation()
+    }
+
     private fun getMap() {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -61,7 +75,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isMapToolbarEnabled = false
-        getCurrentLocation()
     }
 
     /**
@@ -264,5 +277,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         ) {
             getCurrentLocation()
         }
+    }
+
+    private fun listenGpsBroadcast() {
+        gpsReceiver = object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                val locationManager =
+                    getSystemService(LOCATION_SERVICE) as LocationManager
+                val isGpsEnabled: Boolean =
+                    locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                val isNetworkEnabled: Boolean =
+                    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                if (isGpsEnabled || isNetworkEnabled) {
+                    Timber.e("GOD PLEASE")
+                    getCurrentLocation()
+                }
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(gpsReceiver)
     }
 }
