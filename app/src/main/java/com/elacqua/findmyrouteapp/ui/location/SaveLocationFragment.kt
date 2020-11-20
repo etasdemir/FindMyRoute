@@ -1,6 +1,7 @@
 package com.elacqua.findmyrouteapp.ui.location
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -57,6 +58,22 @@ class SaveLocationFragment : Fragment() {
         }
     }
 
+    private fun initNotEditableState() {
+        val key = getString(R.string.save_location_place_key)
+        val places = arguments?.get(key)
+        txt_save_location_title.run {
+            isEnabled = false
+            setTextColor(Color.BLACK)
+            setText((places as Place).title)
+        }
+        txt_save_location_description.run {
+            isEnabled = false
+            setTextColor(Color.BLACK)
+            setText((places as Place).description)
+        }
+        btn_save_location_save.visibility = View.GONE
+    }
+
     private fun buttonCancelListener() {
         btn_save_location_cancel.setOnClickListener {
             navigateBack()
@@ -71,20 +88,6 @@ class SaveLocationFragment : Fragment() {
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(v.windowToken, 0)
         }
-    }
-
-    private fun initNotEditableState() {
-        val key = getString(R.string.save_location_place_key)
-        val places = arguments?.get(key)
-        txt_save_location_title.run {
-            isEnabled = false
-            setText((places as Place).title)
-        }
-        txt_save_location_description.run {
-            isEnabled = false
-            setText((places as Place).description)
-        }
-        btn_save_location_save.visibility = View.GONE
     }
 
     override fun onCreateView(

@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.map_menu.*
+import timber.log.Timber
 
 private const val FIRST_STATE = 0
 private const val ADD_STATE = 1
@@ -106,10 +107,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun observeDecodedPolyline() {
-        viewModel.decodedPolyline.observe(this, {
-            val polylineOpt = PolylineOptions().addAll(it).color(Color.RED).width(5f)
+        viewModel.decodedPolyline.observe(this, { points ->
+            if (points.isEmpty()){
+                return@observe
+            }
+            val polylineOpt = PolylineOptions().addAll(points).color(Color.RED).width(5f)
             mMap.addPolyline(polylineOpt)
-            val pos = LatLng(mAdapter.getPlaces()[0].latitude, mAdapter.getPlaces()[0].longitude)
+            val pos = LatLng(points[0].latitude, points[0].longitude)
             moveCameraToPosition(pos)
         })
     }
@@ -154,7 +158,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun moveCameraToPosition(pos: LatLng){
         mMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
-                pos, 12f
+                pos, 14f
             )
         )
     }

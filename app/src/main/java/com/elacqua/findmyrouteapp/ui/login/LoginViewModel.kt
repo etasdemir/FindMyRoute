@@ -10,6 +10,7 @@ import com.elacqua.findmyrouteapp.data.local.entity.User
 import com.elacqua.findmyrouteapp.util.Utility.md5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LoginViewModel @ViewModelInject constructor(
     private val localRepository: LocalRepository
@@ -47,5 +48,4 @@ class LoginViewModel @ViewModelInject constructor(
             }
         }
     }
-
 }

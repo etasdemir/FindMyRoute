@@ -24,6 +24,9 @@
     <string name="map_show_details">Detay Göster</string>
     <string name="map_show_location">Konuma Git</string>
     <string name="map_route_not_found">Belirtilen noktalar arasında rota bulunamıyor</string>
+    <string name="map_request_gps">Devam etmek için cihazınızın konum özelliğini açın.</string>
+    <string name="map_request_gps_yes">Tamam</string>
+    <string name="map_request_gps_no">Hayır</string>
 
     // Argument Keys
     <string name="save_location_key">saveLocationKey</string>

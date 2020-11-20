@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.elacqua.findmyrouteapp.R
 import com.elacqua.findmyrouteapp.ui.map.MapsActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_login.*
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_login)
 
         buttonSignInListener()
         loginStatusObserver()

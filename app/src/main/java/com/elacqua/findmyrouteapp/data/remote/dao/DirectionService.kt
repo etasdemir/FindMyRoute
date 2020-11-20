@@ -5,7 +5,6 @@ import com.elacqua.findmyrouteapp.data.remote.model.Direction
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-
 interface DirectionService {
 
     @POST("/v2/directions/driving-car/")

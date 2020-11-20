@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.elacqua.findmyrouteapp.R
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -85,12 +86,12 @@ class LocationFinder {
     private fun turnOnGPS(activity: AppCompatActivity) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder
-            .setMessage("Enable GPS")
+            .setMessage(activity.getString(R.string.map_request_gps))
             .setCancelable(false)
-            .setPositiveButton("Yes") { _, _ ->
+            .setPositiveButton(activity.getString(R.string.map_request_gps_yes)) { _, _ ->
                 activity.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
-            .setNegativeButton("No") { dialog, _ ->
+            .setNegativeButton(activity.getString(R.string.map_request_gps_no)) { dialog, _ ->
                 dialog.cancel()
             }
         val alertDialog: AlertDialog = builder.create()

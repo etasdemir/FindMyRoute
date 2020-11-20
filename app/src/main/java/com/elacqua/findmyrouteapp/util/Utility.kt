@@ -18,7 +18,7 @@ object Utility {
 
     /**
      *  Note: Returns LatLng(Longitude, Latitude)
-     *  Because openrouteservice takes requests as Long, Lat and responses too.
+     *  Because openrouteservice takes requests as (Long, Lat) and responses too.
      * */
     fun decodePolyline(polyline: String): List<LatLng> {
         val coordinateChunks: MutableList<MutableList<Int>> = mutableListOf()
@@ -64,12 +64,11 @@ object Utility {
             previousX += coordinates[i + 1]
             previousY += coordinates[i]
 
-//            points.add(LatLng(round(previousX, 5), round(previousY, 5)))
-            points.add(LatLng(previousY, previousX))
+            points.add(LatLng(round(previousY), round(previousX)))
         }
         return points
     }
 
-    private fun round(value: Double, precision: Int) =
+    private fun round(value: Double, precision: Int = 5) =
         (value * 10.0.pow(precision.toDouble())).toInt().toDouble() / 10.0.pow(precision.toDouble())
 }

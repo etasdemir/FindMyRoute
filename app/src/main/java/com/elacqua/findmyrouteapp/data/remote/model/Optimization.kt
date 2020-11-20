@@ -3,7 +3,8 @@ package com.elacqua.findmyrouteapp.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Direction(
+data class Optimization(
     @SerializedName("routes")
-    val polylines: List<Polyline> = listOf()
+    val routes: List<Route> = listOf(),
 )
+

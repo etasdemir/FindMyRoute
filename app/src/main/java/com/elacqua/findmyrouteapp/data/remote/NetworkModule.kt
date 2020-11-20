@@ -1,6 +1,7 @@
 package com.elacqua.findmyrouteapp.data.remote
 
 import com.elacqua.findmyrouteapp.data.remote.dao.DirectionService
+import com.elacqua.findmyrouteapp.data.remote.dao.OptimizationService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,6 +40,10 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideDirectionService(retrofit: Retrofit) =
+    fun provideDirectionService(retrofit: Retrofit): DirectionService =
         retrofit.create(DirectionService::class.java)
+
+    @Provides
+    fun provideOptimizationService(retrofit: Retrofit): OptimizationService =
+        retrofit.create(OptimizationService::class.java)
 }
