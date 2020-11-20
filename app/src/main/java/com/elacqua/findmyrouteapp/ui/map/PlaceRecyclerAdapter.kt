@@ -55,7 +55,7 @@ class PlaceRecyclerAdapter(
         }
 
         private fun toggle() {
-            if (isExpanded){
+            if (isExpanded) {
                 collapse()
             } else {
                 expand()

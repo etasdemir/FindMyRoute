@@ -3,11 +3,11 @@ package com.elacqua.findmyrouteapp.ui.location
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.elacqua.findmyrouteapp.R
 import com.elacqua.findmyrouteapp.data.local.entity.Place
@@ -26,7 +26,7 @@ class SaveLocationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setStateFromArguments()
-        if (state == FragmentState.EDITABLE_STATE){
+        if (state == FragmentState.EDITABLE_STATE) {
             initEditableState()
         } else {
             initNotEditableState()

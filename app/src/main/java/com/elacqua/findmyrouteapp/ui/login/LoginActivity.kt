@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
             val username = txt_login_username.text.toString()
             val password = txt_login_password.text.toString()
             val isInputValid = checkUserCredentials(username, password)
-            if (isInputValid){
+            if (isInputValid) {
                 viewModel.getUser(username, password)
             }
         }
@@ -56,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun loginStatusObserver() {
         viewModel.loginStatus.observe(this, { status ->
-            if (status){
+            if (status) {
                 navigateToMapActivity()
             } else {
                 val message = getString(R.string.login_wrong_credentials)
@@ -78,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun registerStatusObserver() {
         viewModel.registerStatus.observe(this, { status ->
-            val message = if (status){
+            val message = if (status) {
                 getString(R.string.login_sign_up_success)
             } else {
                 getString(R.string.login_username_exist)

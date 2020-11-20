@@ -12,7 +12,7 @@ import com.elacqua.findmyrouteapp.data.local.entity.User
     version = 3,
     exportSchema = false
 )
-abstract class LocalDatabase : RoomDatabase(){
+abstract class LocalDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun placeDao(): PlaceDao
 }

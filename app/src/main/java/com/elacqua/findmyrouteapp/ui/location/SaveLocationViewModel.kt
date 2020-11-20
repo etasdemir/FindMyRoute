@@ -12,7 +12,7 @@ class SaveLocationViewModel @ViewModelInject constructor(
     private val localRepository: LocalRepository
 ) : ViewModel() {
 
-    fun saveLocation(title: String, description: String, location: LatLng){
+    fun saveLocation(title: String, description: String, location: LatLng) {
         viewModelScope.launch {
             val username = localRepository.username
             val place = Place(

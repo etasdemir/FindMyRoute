@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -48,6 +49,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         observePlaces()
         observeDecodedPolyline()
         handleBackStack()
+        observeErrors()
     }
 
     private fun getMap() {
@@ -76,6 +78,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun handleButtonCreateRoute(location: LatLng) {
         btn_map_create_route.setOnClickListener {
+            progressBar_route_loading.visibility = View.VISIBLE
             val places = mAdapter.getPlaces()
             viewModel.findPath(places, location)
         }
@@ -108,13 +111,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun observeDecodedPolyline() {
         viewModel.decodedPolyline.observe(this, { points ->
-            if (points.isEmpty()){
+            if (points.isEmpty()) {
                 return@observe
             }
             val polylineOpt = PolylineOptions().addAll(points).color(Color.RED).width(5f)
             mMap.addPolyline(polylineOpt)
             val pos = LatLng(points[0].latitude, points[0].longitude)
             moveCameraToPosition(pos)
+            progressBar_route_loading.visibility = View.GONE
         })
     }
 
@@ -155,7 +159,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .position(pos)
         )
 
-    private fun moveCameraToPosition(pos: LatLng){
+    private fun moveCameraToPosition(pos: LatLng) {
         mMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 pos, 14f
@@ -227,6 +231,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun observeErrors() {
+        viewModel.genericError.observe(this, {
+            Toast.makeText(this, "Currently unavailable. Try again later", Toast.LENGTH_SHORT)
+                .show()
+            Timber.e("Error code: ${it.statusCode} \n Error: ${it.error}")
+            progressBar_route_loading.visibility = View.GONE
+        })
+
+        viewModel.networkError.observe(this, {
+            Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()
+            Timber.e("Network error")
+            progressBar_route_loading.visibility = View.GONE
+        })
+    }
+
     private fun initRecyclerView() {
         rv_map.run {
             adapter = mAdapter
@@ -241,7 +260,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LocationFinder.REQUEST_LOCATION && grantResults.isNotEmpty() &&
-            grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED){
+            grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
+        ) {
             getCurrentLocation()
         }
     }

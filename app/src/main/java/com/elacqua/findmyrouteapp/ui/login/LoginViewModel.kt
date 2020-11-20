@@ -10,7 +10,6 @@ import com.elacqua.findmyrouteapp.data.local.entity.User
 import com.elacqua.findmyrouteapp.util.Utility.md5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class LoginViewModel @ViewModelInject constructor(
     private val localRepository: LocalRepository
@@ -22,13 +21,13 @@ class LoginViewModel @ViewModelInject constructor(
     private val _registerStatus = MutableLiveData<Boolean>()
     val registerStatus: LiveData<Boolean> = _registerStatus
 
-    fun addUser(username: String, password: String){
+    fun addUser(username: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val hashedPassword = password.md5
             val user = User(username, hashedPassword)
             val rowId = localRepository.addUser(user)
             val invalidRowId = -1L
-            if (rowId == invalidRowId){
+            if (rowId == invalidRowId) {
                 _registerStatus.postValue(false)
             } else {
                 _registerStatus.postValue(true)
@@ -36,11 +35,11 @@ class LoginViewModel @ViewModelInject constructor(
         }
     }
 
-    fun getUser(username: String, password: String){
+    fun getUser(username: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val hashedPassword = password.md5
             val user = localRepository.getUser(username, hashedPassword)
-            if (user == null){
+            if (user == null) {
                 _loginStatus.postValue(false)
             } else {
                 localRepository.username = username

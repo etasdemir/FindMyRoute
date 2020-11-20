@@ -8,9 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.elacqua.findmyrouteapp.data.local.LocalRepository
 import com.elacqua.findmyrouteapp.data.local.entity.Place
 import com.elacqua.findmyrouteapp.data.remote.RemoteRepository
-import com.elacqua.findmyrouteapp.data.remote.model.Coordinates
-import com.elacqua.findmyrouteapp.data.remote.model.Job
-import com.elacqua.findmyrouteapp.data.remote.model.Step
+import com.elacqua.findmyrouteapp.data.remote.ResultWrapper
+import com.elacqua.findmyrouteapp.data.remote.ResultWrapper.*
+import com.elacqua.findmyrouteapp.data.remote.model.*
+import com.elacqua.findmyrouteapp.util.Utility
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,30 +24,38 @@ class MapsViewModel @ViewModelInject constructor(
     private val _decodedPolyline = MutableLiveData<List<LatLng>>()
     val decodedPolyline: LiveData<List<LatLng>> = _decodedPolyline
 
-    val places: LiveData<List<Place>> = getAllPlaces()
+    private val _genericError = MutableLiveData<GenericError>()
+    val genericError: MutableLiveData<GenericError> = _genericError
 
-    init {
-//        deleteAllPlaces()
-//        TODO()
-    }
-    fun deleteAllPlaces(){
-        viewModelScope.launch {
-            localRepository.deleteAllPlaces()
-        }
-    }
+    private val _networkError = MutableLiveData<NetworkError>()
+    val networkError: LiveData<NetworkError> = _networkError
+
+    val places: LiveData<List<Place>> = getAllPlaces()
 
     private fun getAllPlaces() =
         localRepository.getAllPlacesByUsername()
 
     fun findPath(places: List<Place>, location: LatLng) {
         viewModelScope.launch(Dispatchers.IO) {
-            val steps = optimizePoints(places, location)
-            val result = getRoute(steps)
-            _decodedPolyline.postValue(result)
+            when (val response: ResultWrapper<Optimization> = optimizePoints(places, location)) {
+                is Success -> {
+                    if (response.value.routes.isEmpty()) {
+                        return@launch
+                    }
+                    val steps = response.value.routes[0].steps
+                    val result = getRoute(steps)
+                    _decodedPolyline.postValue(result)
+                }
+                is GenericError -> _genericError.postValue(response)
+                is NetworkError -> _networkError.postValue(response)
+            }
         }
     }
 
-    private suspend fun optimizePoints(places: List<Place>, location: LatLng): List<Step> {
+    private suspend fun optimizePoints(
+        places: List<Place>,
+        location: LatLng
+    ): ResultWrapper<Optimization> {
         val jobs = ArrayList<Job>()
         var id = 1
         for (index in places.indices) {
@@ -54,19 +63,26 @@ class MapsViewModel @ViewModelInject constructor(
             val job = Job(id++, jobLocation)
             jobs.add(job)
         }
-        val optimization = remoteRepository.optimizeEndPoints(jobs, location)
-        if (optimization.routes.isEmpty()){
-            return emptyList()
-        }
-        return optimization.routes[0].steps
+        return remoteRepository.optimizeEndPoints(jobs, location)
     }
 
     private suspend fun getRoute(steps: List<Step>): List<LatLng> {
         val points = ArrayList<List<Double>>()
-        for (step in steps){
+        for (step in steps) {
             points.add(step.location)
         }
         val coordinates = Coordinates(points)
-        return remoteRepository.getRoutes(coordinates)
+        when (val response: ResultWrapper<Direction> = remoteRepository.getRoutes(coordinates)) {
+            is Success -> {
+                if (response.value.polylines.isEmpty()) {
+                    return emptyList()
+                }
+                val polyline = response.value.polylines[0].geometry
+                return Utility.decodePolyline(polyline)
+            }
+            is GenericError -> _genericError.postValue(response)
+            is NetworkError -> _networkError.postValue(response)
+        }
+        return emptyList()
     }
 }

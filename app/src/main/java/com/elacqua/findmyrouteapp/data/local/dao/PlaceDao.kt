@@ -2,7 +2,6 @@ package com.elacqua.findmyrouteapp.data.local.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.elacqua.findmyrouteapp.data.local.entity.Place

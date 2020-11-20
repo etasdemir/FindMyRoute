@@ -17,8 +17,8 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): LocalDatabase{
-        return Room.databaseBuilder(context, LocalDatabase::class.java,  "FindMyRouteDb")
+    fun provideDatabase(@ApplicationContext context: Context): LocalDatabase {
+        return Room.databaseBuilder(context, LocalDatabase::class.java, "FindMyRouteDb")
             .fallbackToDestructiveMigration()
             .build()
     }

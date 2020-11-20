@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.GpsStatus
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
@@ -27,11 +26,12 @@ class LocationFinder {
     private val _location = MutableLiveData<LatLng>()
     val location: LiveData<LatLng> = _location
 
-    fun getLocation(activity: AppCompatActivity){
+    fun getLocation(activity: AppCompatActivity) {
         val locationManager =
             activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        ) {
             getLocationIfPermGranted(activity)
         } else {
             turnOnGPS(activity)
@@ -49,7 +49,10 @@ class LocationFinder {
         } else {
             ActivityCompat.requestPermissions(
                 activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
                 REQUEST_LOCATION
             )
         }
@@ -69,7 +72,7 @@ class LocationFinder {
                     .setInterval(5000)
                     .setFastestInterval(1000)
                     .setNumUpdates(1)
-                val locationCallback = object: LocationCallback(){
+                val locationCallback = object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult?) {
                         val loc = result?.lastLocation
                         loc?.let {
@@ -78,7 +81,11 @@ class LocationFinder {
                         }
                     }
                 }
-                fusedLocationFinder.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+                fusedLocationFinder.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.myLooper()
+                )
             }
         }
     }
@@ -98,7 +105,7 @@ class LocationFinder {
         alertDialog.show()
     }
 
-    companion object{
+    companion object {
         const val REQUEST_LOCATION = 1
     }
 }

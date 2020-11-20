@@ -43,7 +43,8 @@ object Utility {
         val coordinates: MutableList<Double> = mutableListOf()
 
         for (coordinateChunk in coordinateChunks) {
-            var coordinate = coordinateChunk.mapIndexed { i, chunk -> chunk shl (i * 5) }.reduce { i, j -> i or j }
+            var coordinate = coordinateChunk.mapIndexed { i, chunk -> chunk shl (i * 5) }
+                .reduce { i, j -> i or j }
 
             // there is a 1 on the right if the coordinate is negative
             if (coordinate and 0x1 > 0)
@@ -57,8 +58,8 @@ object Utility {
         var previousX = 0.0
         var previousY = 0.0
 
-        for(i in 0 until coordinates.size step 2) {
-            if(coordinates[i] == 0.0 && coordinates[i+1] == 0.0)
+        for (i in 0 until coordinates.size step 2) {
+            if (coordinates[i] == 0.0 && coordinates[i + 1] == 0.0)
                 continue
 
             previousX += coordinates[i + 1]
